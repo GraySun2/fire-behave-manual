@@ -1,6 +1,6 @@
 # The Fire, BEHAVE! manual
 
-_For Unreal Engine 5.9, on Windows and Mac. C++ plugin, usable from Blueprints or C++. Copyright 2026 AIGameDev.olution._
+_For Unreal Engine 5.8, on Windows and Mac. C++ plugin, usable from Blueprints or C++. Copyright 2026 AIGameDev.olution._
 
 Fire, BEHAVE! is wildfire that behaves the way real fire does, in weather that is worked out just as carefully. Light a fire and it runs with the wind and up hills, backs slowly into the wind, crosses a road by its embers, climbs into the tree tops on a hot day and dies in the rain. The weather gives each part of the fire its own air (wind at the height of the flames, temperature, humidity, sun, rain and snow), and the fire gives back smoke, its own wind and, when it is big enough, a thunderstorm of its own.
 
@@ -32,7 +32,7 @@ If the build fails, open `Saved\Logs\<YourProject>.log` and search for `error C`
 
 ## 2. The looks, sounds, plants and demo level
 
-The plugin comes with everything it draws and plays already made, in its own Content folder. To see it in the Content Browser, tick **Show Plugin Content** in the Content Browser's settings. It holds:
+The plugin comes with everything it draws and plays already made, in its own Content folder. To see it in the Content Browser, tick **Show Plugin Content** in the Content Browser's settings; its folder there carries the plugin's name, **Fire, BEHAVE!**. It holds:
 
 - **FireLooks**: the two materials that draw the eight fire looks, `M_FirePuff` and `M_SmokePuff`, with the noise texture `T_FireNoise` and the card `SM_FireCard` they draw on.
 - **FireSounds**: the fire's two loops, `S_FireBacking` and `S_FireHead`.
@@ -219,7 +219,7 @@ Every setting has a tooltip that says what it does and in what unit.
 - **Roads and wet lines are not drawn.** The fire knows them; your level shows them. The field draws what grows on it (section 5) and darkens burned ground with plain tiles; the ground's own material is yours.
 - **Plants are drawn, not solid.** Nothing collides with the grass, bushes, logs or trees.
 - **Not replicated.** A multiplayer game should run the fire on the server and send what it needs.
-- **Unreal 5.9, on Windows and Mac.** Built and tested with Unreal 5.9: with Visual Studio's MSVC compiler on Windows, and Apple's clang on a Mac.
+- **Unreal 5.8, on Windows and Mac.** Built and tested with Unreal 5.8.4: with Visual Studio's MSVC compiler on Windows, and Apple's clang on a Mac. The same code builds on the 5.9 preview.
 
 ## 13. Credits and licence
 
