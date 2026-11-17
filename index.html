@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fire, BEHAVE! Manual</title>
+<meta name="description" content="The manual for Fire, BEHAVE!, wildfire and fire weather for Unreal Engine 5.9.">
+<style>
+:root{--bg:#fbf8f4;--fg:#22201d;--muted:#6b645c;--line:#e4ddd3;--accent:#b4441c;--code:#f1ece5}
+@media (prefers-color-scheme:dark){:root{--bg:#171513;--fg:#ece7e1;--muted:#a59d93;--line:#34302b;--accent:#f08a4b;--code:#24211e}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:46rem;margin:0 auto;padding:2.5rem 16px 4rem}
+h1{font-size:2.1rem;line-height:1.2;margin:0 0 .5rem;color:var(--accent)}
+h2{font-size:1.4rem;margin:2.6rem 0 .6rem;padding-top:.6rem;border-top:1px solid var(--line)}
+a{color:var(--accent)}
+code{background:var(--code);padding:.1em .35em;border-radius:4px;font-size:.88em;word-break:break-word}
+pre{background:var(--code);padding:1rem;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+pre code{background:none;padding:0;word-break:normal}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:.93rem;margin:1rem 0}
+th,td{border:1px solid var(--line);padding:.45rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--code)}
+.support{margin:1.2rem 0 0;padding:.8rem 1rem;border:1px solid var(--line);border-radius:8px;color:var(--muted)}
+footer{margin-top:3rem;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:1rem}
+</style>
+</head>
+<body>
+<main>
+<h1 id="fire-behave-the-manual">Fire, BEHAVE! The manual</h1>
+<p><em>For Unreal Engine 5.9, on Windows. C++ plugin, usable from
+Blueprints or C++. Copyright 2026 AIGameDev.olution.</em></p>
+<p class="support">Questions or problems? Email support at <a href="mailto:bigfootHCIM@proton.me">bigfootHCIM@proton.me</a>.</p>
+
+<p>Fire, BEHAVE! is wildfire that behaves the way real fire does, in
+weather that is worked out just as carefully. Light a fire and it runs
+with the wind and up hills, backs slowly into the wind, crosses a road
+by its embers, climbs into the tree tops on a hot day and dies in the
+rain. The weather gives each part of the fire its own air (wind at the
+height of the flames, temperature, humidity, sun, rain and snow), and
+the fire gives back smoke, its own wind and, when it is big enough, a
+thunderstorm of its own.</p>
+<p>The fire's spread is the Rothermel model the US Forest Service uses,
+with the forty fuel models of today's fuel maps, and the weather's
+numbers are checked against published tables. All of that maths is plain
+C++ with no engine in it, and it ships with its tests.</p>
+<p><strong>Contents</strong></p>
+<ol type="1">
+<li><a href="#1-install">Install</a></li>
+<li><a href="#2-make-the-fires-looks-sounds-and-plants-once">Make the
+fire's looks, sounds and plants, once</a></li>
+<li><a href="#3-your-first-fire-in-five-minutes">Your first fire, in
+five minutes</a></li>
+<li><a href="#4-the-fire-looks">The fire looks</a></li>
+<li><a href="#5-grass-bushes-fallen-wood-and-trees">Grass, bushes,
+fallen wood and trees</a></li>
+<li><a href="#6-the-fires-sound">The fire's sound</a></li>
+<li><a href="#7-the-weather">The weather</a></li>
+<li><a href="#8-temperatures-celsius-fahrenheit-or-kelvin">Temperatures:
+Celsius, Fahrenheit or Kelvin</a></li>
+<li><a href="#9-using-it-from-your-game">Using it from your
+game</a></li>
+<li><a href="#10-settings-worth-knowing">Settings worth knowing</a></li>
+<li><a href="#11-packaging-your-game">Packaging your game</a></li>
+<li><a href="#12-limits">Limits</a></li>
+<li><a href="#13-credits-and-licence">Credits and licence</a></li>
+</ol>
+<h2 id="1-install">1. Install</h2>
+<ol type="1">
+<li>Close the Unreal editor.</li>
+<li>Put the <code>WeatherDirector</code> folder into your project's
+<code>Plugins</code> folder (make the folder if there isn't one), so
+that you have
+<code>Plugins\WeatherDirector\WeatherDirector.uplugin</code>. If you
+installed it from Fab into the engine, skip this step and turn it on
+under <strong>Edit &gt; Plugins</strong> instead.</li>
+<li>Open the project. If Unreal asks to rebuild modules, click
+<strong>Yes</strong>. This needs Visual Studio with the "Game
+development with C++" tools. A project with no C++ of its own yet needs
+one class first: <strong>Tools &gt; New C++ Class</strong>, pick
+<strong>None</strong>, <strong>Create Class</strong>.</li>
+</ol>
+<p>If the build fails, open
+<code>Saved\Logs\&lt;YourProject&gt;.log</code> and search for
+<code>error C</code>. Each line found has the file and line number. Send
+them to support.</p>
+<h2 id="2-make-the-fires-looks-sounds-and-plants-once">2. Make the
+fire's looks, sounds and plants, once</h2>
+<p>The eight fire looks are drawn by two materials, and the grass,
+bushes, fallen wood and trees a field grows by two more. Unreal makes
+materials on your machine, so the plugin brings a short script that
+makes them, together with the texture, card and models they use and the
+fire's two sounds.</p>
+<ol type="1">
+<li><strong>Edit &gt; Plugins</strong>, search for <strong>Python Editor
+Script Plugin</strong>, tick it and restart the editor.</li>
+<li><strong>Tools &gt; Execute Python Script</strong>, and pick
+<code>Plugins/WeatherDirector/Extras/FireLooks/make_fire_looks.py</code>.</li>
+<li>Wait a few minutes. The Output Log ends with <strong>FIRE_LOOKS
+done, no problems</strong>. The Content Browser (with <strong>Show
+Plugin Content</strong> ticked in its settings) now has <strong>Weather
+Director Content &gt; FireLooks</strong> with <code>T_FireNoise</code>,
+<code>SM_FireCard</code>, <code>M_FirePuff</code> and
+<code>M_SmokePuff</code>, <strong>FireSounds</strong> with
+<code>S_FireBacking</code> and <code>S_FireHead</code>, and
+<strong>FuelArt</strong> with the plants: <code>SM_FuelGrass</code>,
+three bushes, three logs and a branch, three each of conifers, broadleaf
+trees and dead snags, and their two materials, <code>M_FuelGrass</code>
+and <code>M_FuelPlant</code>.</li>
+<li>Restart the editor once, so every Fire Field picks them up.</li>
+</ol>
+<p>Until this has run, a Fire Field draws its fire as plain orange cones
+(and says so once in the Output Log), plays no sound and grows nothing.
+Running it again keeps the card, the meshes and the four materials and
+imports the texture and sounds again. If you update the plugin and a
+material it keeps was made by an older copy of the script, the Output
+Log says so in a <strong>PROBLEM</strong> line. To make everything
+afresh, close the editor, delete the plugin's
+<code>Content/FireLooks</code> and <code>Content/FuelArt</code> folders,
+open the editor and run it again.</p>
+<p><strong>The demo level.</strong> Run
+<code>Plugins/WeatherDirector/Extras/Demo/make_demo_map.py</code> the
+same way, after the looks. It makes <strong>Demo &gt; FireDemo</strong>:
+a late-afternoon sky over dry grass, a Weather Director and a Fire Field
+with their try-it keys on, a road 40 metres ahead that a fire on a mild
+day won't cross, a stand of young conifers that torch, a patch of
+head-high brush and one of clearcut slash, and a ridge. The field draws
+the grass, the brush, the slash and the trees itself (section 5). Open
+it, press Play, click in the game view and press <strong>F</strong>.</p>
+<p><strong>The look test levels.</strong>
+<code>Extras/Demo/make_look_test.py</code>, run the same way, makes
+<strong>Demo &gt; LookTest_Evening</strong> and
+<strong>LookTest_Day</strong>: rows of small fields that light
+themselves, one panel for each of the eight looks, for steps of Flame
+Glow, Smoke Glow and Flame Stretch, for seven fuels, and under two kinds
+of trees, each with a sign. Fly along the rows to compare them. The
+director's number keys change the weather for all of them at once.</p>
+<p>To run it without opening the editor:
+<code>UnrealEditor-Cmd.exe &lt;YourProject&gt;.uproject -ExecutePythonScript="&lt;full path to make_fire_looks.py&gt;" -unattended</code>.
+Don't add <code>-nullrhi</code>, because the materials need a renderer
+to compile.</p>
+<h2 id="3-your-first-fire-in-five-minutes">3. Your first fire, in five
+minutes</h2>
+<ol type="1">
+<li><strong>File &gt; New Level &gt; Basic</strong>.</li>
+<li><strong>Window &gt; Place Actors</strong>, search for
+<strong>Weather Director</strong> and drag one onto the floor. In its
+<strong>Details</strong>, under <strong>Weather &gt; Try It</strong>,
+tick <strong>Number Keys Change Weather</strong> and <strong>Show
+Readout</strong>.</li>
+<li>Search Place Actors for <strong>Weather Fire Field</strong> and drag
+one onto the floor. A box 256 metres square appears: the ground that can
+burn, tall grass unless you say otherwise. Set its
+<strong>Location</strong> X and Y to <strong>0</strong>. Under
+<strong>Weather &gt; Fire &gt; Try It</strong>, tick <strong>Keys Light
+Fires</strong>.</li>
+<li>Select <strong>Player Start</strong> and set its Location X and Y to
+<strong>0</strong> and Rotation Z to <strong>0</strong>, so that you
+start in the middle, looking downwind.</li>
+<li>Press <strong>Play</strong> and click in the game view. Press
+<strong>F</strong>. A fire starts 30 metres ahead of you. It runs away
+from you with the wind, spreads slowly at its sides and creeps back
+toward you into the wind. Seen from above it becomes a long egg pointing
+downwind.</li>
+<li>Press <strong>J</strong> for a hot, dry, windy afternoon (32 °C, 15%
+humidity, 6 m/s), wait half a minute and press <strong>F</strong> again.
+This fire runs about three times as fast, throws embers that start spot
+fires ahead of it, and may raise a fire whirl.</li>
+<li>Press <strong>4</strong> for rain and watch the fire die within
+seconds. <strong>H</strong> puts every fire out at once.</li>
+</ol>
+<p>The other keys: <strong>G</strong> lands a lightning stroke 30 metres
+ahead, <strong>K</strong> swings the wind a sixth of a turn (the wind
+shift fire crews fear), <strong>T</strong> walks a drip torch along a 40
+metre line, and <strong>L</strong> wets a line 6 metres wide. The number
+keys change the weather (section 7), and <strong>0</strong> hides or
+shows the readout.</p>
+<p>The orange readout at the top left is the fire's numbers: cells
+alight, hectares burned, how fast the head runs, flame length, power,
+spot fires, then the fire danger and the fire's air where you stand. The
+same keys work from the console: <code>Weather.Fire Light</code>,
+<code>Strike</code>, <code>Out</code>, <code>Torch</code>,
+<code>Strips 3</code>, <code>Hose 2</code>, <code>HotDay 6</code>,
+<code>WindShift</code>.</p>
+<h2 id="4-the-fire-looks">4. The fire looks</h2>
+<p>Select the Fire Field and change <strong>Look</strong>, under
+<strong>Weather &gt; Fire &gt; Drawing</strong>. It changes while the
+game runs, so you can flip through them in play:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Look</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Plain</td>
+<td>Orange cones that lean as the flames lean, dark tiles for burned
+ground and grey balls for smoke. For working on the fire's
+behaviour</td>
+</tr>
+<tr class="even">
+<td>Soft</td>
+<td>Soft, glowing puffs of flame</td>
+</tr>
+<tr class="odd">
+<td>Cel Shaded</td>
+<td>Flat bands of colour with a dark edge</td>
+</tr>
+<tr class="even">
+<td>Painterly (default)</td>
+<td>Brush-stroke flame</td>
+</tr>
+<tr class="odd">
+<td>Shards</td>
+<td>Faceted crystal flame</td>
+</tr>
+<tr class="even">
+<td>Illustrative</td>
+<td>Inked shapes with warm shadows</td>
+</tr>
+<tr class="odd">
+<td>Rim Glow</td>
+<td>Dark flame with a bright rim</td>
+</tr>
+<tr class="even">
+<td>Illustrative Cool</td>
+<td>Inked shapes with cool shadows</td>
+</tr>
+<tr class="odd">
+<td>Sunset Shards</td>
+<td>Faceted flame shaded from gold at the ground to deep red at the
+tips; the look of the game Burn Director</td>
+</tr>
+</tbody>
+</table>
+<p>Every look draws flame, smoke, rising ash over fresh black ground,
+wisps from embers smouldering in the litter, and a spinning column of
+flame and ash for each fire whirl. The puffs take their shape from the
+fire maths: flames lean by the wind and the slope, stand as tall as the
+flame height says, and a head fire looks different from one backing into
+the wind.</p>
+<p>Three dials beside it tune any look while the game runs.
+<strong>Flame Glow</strong> sets how brightly the flames glow, times the
+look's own glow: turn it down if the flames read white in a bright
+level. <strong>Smoke Glow</strong> does the same for the smoke, dust and
+ash, and <strong>Flame Stretch</strong> sets how far the flames stretch
+along their motion. <strong>Light At Start</strong>, under <strong>Try
+It</strong>, lights a fire in the middle of the field when the level
+starts.</p>
+<p><code>Extras/Demo/make_look_test.py</code> builds a test level of
+panels: small fields side by side, each burning from the start, one for
+each look, for steps of the three dials, for different fuels, and under
+trees. See <a
+href="#2-make-the-fires-looks-sounds-and-plants-once">section 2</a>.</p>
+<p>To use your own art, set <strong>Look Card Mesh</strong>,
+<strong>Look Flame Material</strong> and <strong>Look Smoke
+Material</strong>. The material reads its look from a scalar parameter
+called <strong>Style</strong>, plus <strong>Stretch</strong> and
+<strong>Glow</strong>, and each puff's numbers from 11 per-instance
+custom floats (seed, size, age, heat, velocity, centre, height above
+ground). <code>WeatherFireLooks.h</code> documents them.</p>
+<h2 id="5-grass-bushes-fallen-wood-and-trees">5. Grass, bushes, fallen
+wood and trees</h2>
+<p>A Fire Field draws what grows on it, as thick and as tall as each
+fuel carries, from the same numbers the fire burns. GR1 is a thin cover
+of ankle-high tufts, short grass stands a foot high and tall grass waist
+high; chaparral is head-high brush; timber litter has fallen branches,
+and TL7 big fallen logs; slash is a clutter of logs and branches. A Fire
+Fuel box with <strong>Trees</strong> ticked grows a stand of them, as
+tall as its <strong>Tree Height Metres</strong> and as close as its
+<strong>Tree Cover</strong>. Conifers stand over most fuels and
+broadleaf trees over the broadleaf litters (Hardwood Litter, TL2, TL6
+and TL9); about one tree in twenty-five is a dead snag. The same field
+is planted the same way every time.</p>
+<p>As the fire comes, grass and bushes glow under the flames and burn to
+black, the grass down to stubble tipped with grey ash and the bushes to
+bare branches, all standing on a skin of ash with a ragged edge. Trees
+go a dull dark brown as high as the heat reaches (a fire beside a stand
+scorches it too), blacken from the ground up, go black with glowing
+patches of embers while the fire is in their tops, and stand as black
+poles once a crown fire has run through them. Each tree burns with the
+ground under the whole of its crown, not only where its trunk stands.
+Leaves let the light through, so a stand with the sun behind it glows
+green at its edges. Where rain or water puts a fire out, the ground it
+burned stays black, though the fuel it had not yet burned there can
+still catch again. <strong>Mow</strong> cuts the grass and bushes down,
+and <strong>Set Fuel At</strong> grows what the new fuel carries, on
+burned ground too. The grass is straw when cured and green when lush, by
+the field's <strong>Greenness</strong> or its season, and bends with the
+wind at the field.</p>
+<p>The settings are under <strong>Weather &gt; Fire &gt; Fuel
+Art</strong>, and are read when the level starts:</p>
+<ul>
+<li><strong>Draw Fuel</strong>: on by default. Turn it off to draw your
+own ground cover.</li>
+<li><strong>Fuel Art Density</strong>: how much to draw, as a share of
+what the fuel carries, 0.05 to 2. Lower it for a slower machine.</li>
+<li><strong>Fuel Art Distance Metres</strong>: how far from the camera
+grass, bushes and fallen wood are drawn, 150 by default. Trees are drawn
+as far as they can be seen, with simpler versions far away.</li>
+<li><strong>Grass Meshes</strong>, <strong>Shrub Meshes</strong>,
+<strong>Log Meshes</strong>, <strong>Limb Meshes</strong>,
+<strong>Conifer Meshes</strong>, <strong>Broadleaf Meshes</strong> and
+<strong>Snag Meshes</strong>: the meshes each kind is drawn with, one
+picked for each plant. The plugin's own are set.</li>
+</ul>
+<p>To make the plants lighter or darker, open <code>M_FuelPlant</code>
+and change the defaults of <strong>LeafLift</strong> (1.5: how much the
+darkest leaves are lifted), <strong>WoodLift</strong> (1.2, the same for
+wood and bark) and <strong>LightThrough</strong> (0.6: how much light
+the leaves let through). <strong>Charcoal</strong> is the black that
+burned wood and leaves turn. <strong>EmberGlow</strong> (2, and 1.5 on
+<code>M_FuelGrass</code>) sets how brightly burning plants glow: raise
+it in a bright midday level where the embers don't show, and lower it if
+they read white. Running the script again keeps your change.</p>
+<p><strong>Your own meshes.</strong> A mesh stands on its origin with
+its up along Z; a log or a branch lies along its Z, centred on its
+origin, with its ground side toward its X. It is sized to the fuel by
+its bounds. Its material needs <strong>Used with Instanced Static
+Meshes</strong> ticked. To burn with the fire, it reads four
+per-instance custom data floats: 0 how black it is, 1 how hot it glows
+now, 2 how high a tree's needles are browned (a share of its height),
+and 3 the share of its leaves burned away (for grass, its height in
+centimetres). <code>WeatherFireFuelArt.h</code> documents them, and a
+material that ignores them simply doesn't burn. To use the plugin's own
+<code>M_FuelPlant</code> or <code>M_FuelGrass</code> on your mesh, give
+its vertices their colour (linear, as glTF stores it) and a first UV
+whose V runs from 1 at the ground to 0 at the top in Unreal (0 at the
+ground and 1 at the top in Blender's UV editor, since export turns it
+over): that is how high up the plant each point is, which the scorch and
+the char climb. Its U is not read.</p>
+<p><strong>What it costs.</strong> The plants are a few hundred
+triangles each. A field 256 metres square of tall grass draws about
+29,000 clumps of grass, and the demo's stand of young conifers a tree
+every 7 or 8 metres. A field too big to draw all of is drawn thinner,
+and says so in the Output Log: at most 400,000 grass clumps, 150,000
+bushes, 30,000 logs, 80,000 branches and 100,000 trees. The field is
+drawn in up to 16 tiles, so a fire redraws only the tiles it is in, ten
+times a second.</p>
+<h2 id="6-the-fires-sound">6. The fire's sound</h2>
+<p>The Fire Field plays five looping sounds, each heard from where the
+player's ears are, by the same rules the fire uses:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Slot</th>
+<th>When you hear it</th>
+<th>Ships with</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Backing Fire Sound</td>
+<td>Low flames close by: a slow fire creeping into the wind</td>
+<td>A recording of a real grass fire backing through a meadow</td>
+</tr>
+<tr class="even">
+<td>Head Fire Sound</td>
+<td>Tall flames close by: the fire running with the wind. The two fade
+into each other as the near flames grow past about a metre</td>
+<td>A recording of a real fire running</td>
+</tr>
+<tr class="odd">
+<td>Roar Sound</td>
+<td>A lot of tall flame anywhere near. Carries much farther than the
+crackle</td>
+<td>Empty: set your own</td>
+</tr>
+<tr class="even">
+<td>Whirl Sound</td>
+<td>The nearest fire whirl, heard from where it spins</td>
+<td>Empty: set your own</td>
+</tr>
+<tr class="odd">
+<td>Smoulder Sound</td>
+<td>Standing on or beside burned ground</td>
+<td>Empty: set your own</td>
+</tr>
+</tbody>
+</table>
+<p>They are under <strong>Weather &gt; Fire &gt; Sound</strong>, with
+<strong>Play Sound</strong> to turn it all off and <strong>Sound
+Volume</strong> for the whole fire. Any looping Sound Wave or Sound Cue
+works in a slot. The fire's own maths fades each loop with distance and
+places it, so give the sounds no attenuation of their own.</p>
+<h2 id="7-the-weather">7. The weather</h2>
+<p>One <strong>Weather Director</strong> per level runs the weather.
+Pick its <strong>Start Preset</strong> in Details, or change it while
+the game runs:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Key</th>
+<th>Preset</th>
+<th>Wind</th>
+<th>Rain or snow</th>
+<th>Visibility</th>
+<th>Temperature</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Clear</td>
+<td>3 m/s</td>
+<td>none</td>
+<td>20 km</td>
+<td>15 °C</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Light Snow</td>
+<td>4 m/s</td>
+<td>light snow</td>
+<td>2 km</td>
+<td>-1 °C</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Heavy Snow</td>
+<td>9 m/s</td>
+<td>heavy snow</td>
+<td>400 m</td>
+<td>-4 °C</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Rain</td>
+<td>6 m/s</td>
+<td>rain</td>
+<td>4 km</td>
+<td>12 °C</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Thunderstorm</td>
+<td>14 m/s</td>
+<td>heavy rain, lightning</td>
+<td>1 km</td>
+<td>22 °C</td>
+</tr>
+</tbody>
+</table>
+<p>From a Blueprint: <strong>Find Weather Director</strong>, then
+<strong>Set Preset</strong> (with how many seconds the change takes) or
+<strong>Set Weather</strong> with your own numbers. From the console:
+<code>Weather.Preset Thunderstorm 30</code>.</p>
+<p>The director moves the level's Exponential Height Fog (and makes one
+if there is none), turns the level's Wind Directional Source to the
+wind, and draws snow and rain around the camera. It keeps count of the
+ground: snow depth, wetness, ice and grip, for your game to read with
+<strong>Get Ground</strong>.</p>
+<p><strong>Quality</strong>, under <strong>Weather &gt; Full</strong>,
+sets how deep the weather goes. <strong>Low</strong>, the default, is
+the weather above, cheap enough for any machine. <strong>Medium</strong>
+and up add the full fire weather: wind that changes with height and
+terrain (town or open field), the ground's own temperature in the sun,
+rain and snow sorted by the air they fall through (with freezing rain
+and ice pellets), floods on low ground, and a day with its own high and
+low. <strong>High</strong> and <strong>Full</strong> draw four and
+sixteen times the flakes and drops, and <strong>Full</strong> turns on
+Unreal's volumetric fog. Full also lets a big fire pull in its own wind,
+shade the fuel with its smoke, and grow a thunderstorm whose lightning
+starts more fires.</p>
+<p>At any Quality you can also place weather that moves across the
+level: a <strong>Weather Front</strong> (or <strong>Weather Warm
+Front</strong>) that changes the air behind it, with a wind shift a fire
+feels, and a <strong>Weather Storm Cell</strong>, a travelling
+thunderstorm with its own rain, lightning and gust front. The director's
+<strong>Dust Devils</strong> setting adds dust devils on hot
+afternoons.</p>
+<p>For anything the wind should push, add a <strong>Weather Wind
+Push</strong> component. A physics body needs <strong>Simulate
+Physics</strong> ticked; a character needs nothing more.</p>
+<p>For lightning, bind the director's <strong>On Lightning
+Strike</strong> and <strong>On Thunder</strong> events and play your own
+flash and thunder. Thunder arrives about three seconds after the strike
+for every kilometre. A Fire Field listens for strikes and may start a
+fire where one lands in dry fuel.</p>
+<h2 id="8-temperatures-celsius-fahrenheit-or-kelvin">8. Temperatures:
+Celsius, Fahrenheit or Kelvin</h2>
+<p>Every temperature setting is stored in Celsius and tagged as a
+temperature, so the Details panel shows it in the unit you pick under
+<strong>Editor Preferences &gt; General &gt; Appearance &gt; Units &gt;
+Temperature</strong>. You can type a value in any unit.</p>
+<p>The on-screen readouts follow the director's <strong>Readout
+Temperature Units</strong> (Celsius, Fahrenheit or Kelvin). Your own UI
+can use <strong>Convert Temperature</strong> and <strong>Temperature
+Text</strong>, which take Celsius and the unit you want:
+<code>Temperature Text(15, Fahrenheit)</code> gives "59 F". The
+functions your game calls take and return Celsius.</p>
+<h2 id="9-using-it-from-your-game">9. Using it from your game</h2>
+<p><strong>The fire.</strong> Get the field with <strong>Get Actor Of
+Class</strong> (Weather Fire Field), then:</p>
+<ul>
+<li><strong>Change the fire:</strong> <strong>Ignite</strong> (a match,
+or a patch), <strong>Light Along</strong> (a drip torch walking a path;
+call it each tick with the two places a torch was and is), <strong>Strip
+Fire</strong> (rows lit one behind another), <strong>Douse</strong> and
+<strong>Douse Line</strong> (water: a lasting wet line),
+<strong>Mow</strong>, <strong>Set Fuel At</strong>, <strong>Strike
+At</strong> (lightning), <strong>Roll Log</strong>, <strong>Put
+Out</strong>.</li>
+<li><strong>Read the fire:</strong> <strong>Get Fire At</strong> (flame
+length, lean, height, depth, tree tops left, water on the ground),
+<strong>Get Fire Danger</strong> (what a fire would do here before one
+is lit), <strong>Get Smoke At</strong>, <strong>Get Heat At</strong>
+(the heat on a person; <strong>Advance Burn</strong> keeps count of the
+harm), <strong>Get Fire Wind At</strong>, <strong>Get Ground Wind
+At</strong>, <strong>Get Totals</strong>.</li>
+<li><strong>The season and the drought:</strong> <strong>Set Season
+Index</strong>, <strong>Set Drought</strong>, <strong>Get
+Season</strong>, <strong>Get Drought</strong>.</li>
+<li><strong>On Fire Event</strong> tells you when something happens: a
+fire lit, flames across a break, a spot fire, trees torching, a whirl,
+an ember gone to ground, the last fire out.</li>
+</ul>
+<p>Call these after the field's Begin Play, which is where the field is
+made. <strong>Set Drought</strong> and <strong>Set Season Index</strong>
+can be called earlier.</p>
+<p><strong>What grows where.</strong> Drop a <strong>Weather Fire
+Fuel</strong> box inside the field to change the fuel there: a road
+(nothing to burn), a mown strip, a stand of trees, or any of the forty
+fuel models. A field reads the height of the ground under each cell when
+the level starts, so fire runs faster uphill.</p>
+<p><strong>The weather.</strong> <strong>Find Weather Director</strong>,
+then <strong>Set Preset</strong>, <strong>Set Weather</strong>,
+<strong>Get Local Weather</strong> (the weather where something stands,
+with "feels like"), <strong>Get Wind At Location</strong>, <strong>Get
+Ground</strong>, <strong>Get Felt Weather</strong>, <strong>Get
+Day</strong> and <strong>Get Level Report</strong>.</p>
+<p><strong>In C++</strong>, add <code>"WeatherDirector"</code> to your
+module's <code>Build.cs</code> dependencies and include
+<code>WeatherFireFieldActor.h</code> or
+<code>WeatherDirectorActor.h</code>:</p>
+<pre class="cpp"><code>AWeatherFireField* Fire = Cast&lt;AWeatherFireField&gt;(UGameplayStatics::GetActorOfClass(this, AWeatherFireField::StaticClass()));
+if (Fire != nullptr)
+{
+    const FWeatherFireOutlook Danger = Fire-&gt;GetFireDanger(GetActorLocation());
+    UE_LOG(LogTemp, Display, TEXT(&quot;A fire here would run %.0f m a minute&quot;), Danger.RateMetresPerMinute);
+    Fire-&gt;Ignite(GetActorLocation() + GetActorForwardVector() * 1000.0, 2.0f);
+}</code></pre>
+<p>The maths needs no engine at all: <code>Public/WeatherFire.h</code>
+(<code>wx::fire</code>) and <code>Public/WeatherFull.h</code>
+(<code>wx</code>) build in any C++17 compiler, so a server, a tool or
+another engine can run the same fire.</p>
+<h2 id="10-settings-worth-knowing">10. Settings worth knowing</h2>
+<p>On the <strong>Fire Field</strong> (under <strong>Weather &gt;
+Fire</strong>):</p>
+<ul>
+<li><strong>Fuel</strong>: what grows on the field where no Fire Fuel
+box says otherwise.</li>
+<li><strong>Cell Metres</strong>: the size of one burning cell. 2 by
+default; 4 is a quarter of the cost.</li>
+<li><strong>Seed</strong>: the same number gives the same embers, whirls
+and lightning every time.</li>
+<li><strong>Fire Time Scale</strong> and <strong>Fuel Time
+Scale</strong>: the fire burns at real speed and the fuel dries 60 times
+faster, so that rain and sun change things while you watch. Set either
+to what your game needs.</li>
+<li><strong>Lightning Starts Fires</strong>, <strong>Read Ground
+Height</strong>, and the switches under <strong>Hills</strong>
+(<strong>Air By Height</strong>, <strong>Slope Winds</strong>,
+<strong>Terrain Wind</strong>) turn each rule on or off.</li>
+<li><strong>Draw Fuel</strong>, <strong>Fuel Art Density</strong> and
+<strong>Fuel Art Distance Metres</strong>, under <strong>Fuel
+Art</strong>: the plants (section 5).</li>
+</ul>
+<p>On the <strong>Weather Director</strong>: <strong>Start
+Preset</strong>, <strong>Quality</strong>, <strong>Ground Time
+Scale</strong>, <strong>Fires Change The Weather</strong> (smoke in the
+fog and the fire's pull in the wind), <strong>Sun Light</strong> (point
+it at the level's sun so the day and the night follow it), and
+<strong>Readout Temperature Units</strong>.</p>
+<p>Every setting has a tooltip that says what it does and in what
+unit.</p>
+<h2 id="11-packaging-your-game">11. Packaging your game</h2>
+<ul>
+<li>Set your own materials for the weather's flakes, drops and the plain
+look's shapes (<strong>Snow Material</strong>, <strong>Rain
+Material</strong>, <strong>Flame Material</strong>, <strong>Burned
+Material</strong>, <strong>Smoke Material</strong>), with <strong>Used
+with Instanced Static Meshes</strong> ticked. The engine's plain shape
+material, which these use by default, is fine in the editor.</li>
+<li>The fire looks' own materials and sounds, and the plants' meshes and
+materials, are referenced from the plugin's code, so they are packed
+with your game.</li>
+<li>The orange readout, the try-it keys and the <code>Weather.</code>
+console commands are for the editor and development builds. A shipping
+build has none of them.</li>
+</ul>
+<h2 id="12-limits">12. Limits</h2>
+<ul>
+<li><strong>One Weather Director per level</strong>, and keep it in the
+main level, not a streamed sublevel.</li>
+<li><strong>One air for the whole level.</strong> The weather has one
+temperature and dew point at a given height; storms and fronts change
+the wind and rain from place to place, and the fire's own air changes
+over its hills.</li>
+<li><strong>The ground is numbers.</strong> Snow cover, puddles and ice
+are counted, not drawn. Read <strong>Get Ground</strong> and drive your
+own materials.</li>
+<li><strong>No shelter.</strong> Wind, rain and snow pass through walls
+and roofs.</li>
+<li><strong>Lightning is an event.</strong> It draws a plain debug line,
+left out of shipping builds; your game plays the flash and the
+thunder.</li>
+<li><strong>Roads and wet lines are not drawn.</strong> The fire knows
+them; your level shows them. The field draws what grows on it (section
+5) and darkens burned ground with plain tiles; the ground's own material
+is yours.</li>
+<li><strong>Plants are drawn, not solid.</strong> Nothing collides with
+the grass, bushes, logs or trees.</li>
+<li><strong>Not replicated.</strong> A multiplayer game should run the
+fire on the server and send what it needs.</li>
+<li><strong>Windows and Unreal 5.9.</strong> Built and tested with
+Unreal 5.9 and Visual Studio's MSVC compiler.</li>
+</ul>
+<h2 id="13-credits-and-licence">13. Credits and licence</h2>
+<p>The plugin, its code, its shaders and its documentation are copyright
+2026 AIGameDev.olution, all rights reserved, and are licensed to you
+under the Fab end user licence that came with your purchase.</p>
+<p>The plants' models were made in code for the game Burn Director (Epic
+MegaJam 2026) by the plugin's author, and are drawn here with the
+plugin's own materials, without that game's cartoon outlines.
+<code>Extras/FuelArt/CREDITS.md</code> has the details.</p>
+<p>The fire's two sounds are recordings of real fires: the Maple Fire of
+14 August 2016, from the Yellowstone National Park sound library of the
+US National Park Service (public domain; credit: National Park Service),
+and "Big Branching Fire #1" by Joseph Sardin, BigSoundBank (CC0).
+<code>Extras/FireSounds/CREDITS.md</code> has the details.</p>
+<p>The fire's spread follows Rothermel (1972) and Andrews (2018), with
+the forty fuel models of Scott and Burgan (2005), crown fire after Van
+Wagner (1977) and Rothermel (1991), and spotting after Albini (1979).
+Its numbers are checked against BehavePlus.</p>
+<footer>Support: <a href="mailto:bigfootHCIM@proton.me">bigfootHCIM@proton.me</a>. Unreal and Unreal Engine are trademarks or registered trademarks of Epic Games, Inc. in the United States and elsewhere.</footer>
+</main>
+</body>
+</html>
