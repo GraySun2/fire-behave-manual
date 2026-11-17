@@ -1,6 +1,6 @@
-# Fire, BEHAVE! The manual
+# The Fire, BEHAVE! manual
 
-_For Unreal Engine 5.9, on Windows. C++ plugin, usable from Blueprints or C++. Copyright 2026 AIGameDev.olution._
+_For Unreal Engine 5.9, on Windows and Mac. C++ plugin, usable from Blueprints or C++. Copyright 2026 AIGameDev.olution._
 
 Fire, BEHAVE! is wildfire that behaves the way real fire does, in weather that is worked out just as carefully. Light a fire and it runs with the wind and up hills, backs slowly into the wind, crosses a road by its embers, climbs into the tree tops on a hot day and dies in the rain. The weather gives each part of the fire its own air (wind at the height of the flames, temperature, humidity, sun, rain and snow), and the fire gives back smoke, its own wind and, when it is big enough, a thunderstorm of its own.
 
@@ -9,7 +9,7 @@ The fire's spread is the Rothermel model the US Forest Service uses, with the fo
 **Contents**
 
 1. [Install](#1-install)
-2. [Make the fire's looks, sounds and plants, once](#2-make-the-fires-looks-sounds-and-plants-once)
+2. [The looks, sounds, plants and demo level](#2-the-looks-sounds-plants-and-demo-level)
 3. [Your first fire, in five minutes](#3-your-first-fire-in-five-minutes)
 4. [The fire looks](#4-the-fire-looks)
 5. [Grass, bushes, fallen wood and trees](#5-grass-bushes-fallen-wood-and-trees)
@@ -26,26 +26,37 @@ The fire's spread is the Rothermel model the US Forest Service uses, with the fo
 
 1. Close the Unreal editor.
 2. Put the `WeatherDirector` folder into your project's `Plugins` folder (make the folder if there isn't one), so that you have `Plugins\WeatherDirector\WeatherDirector.uplugin`. If you installed it from Fab into the engine, skip this step and turn it on under **Edit > Plugins** instead.
-3. Open the project. If Unreal asks to rebuild modules, click **Yes**. This needs Visual Studio with the "Game development with C++" tools. A project with no C++ of its own yet needs one class first: **Tools > New C++ Class**, pick **None**, **Create Class**.
+3. Open the project. If Unreal asks to rebuild modules, click **Yes**. This needs Visual Studio with the "Game development with C++" tools on Windows, or Xcode on a Mac. A project with no C++ of its own yet needs one class first: **Tools > New C++ Class**, pick **None**, **Create Class**.
 
-If the build fails, open `Saved\Logs\<YourProject>.log` and search for `error C`. Each line found has the file and line number. Send them to support.
+If the build fails, open `Saved\Logs\<YourProject>.log` and search for `error C` (on a Mac, `error:`). Each line found has the file and line number. Send them to support.
 
-## 2. Make the fire's looks, sounds and plants, once
+## 2. The looks, sounds, plants and demo level
 
-The eight fire looks are drawn by two materials, and the grass, bushes, fallen wood and trees a field grows by two more. Unreal makes materials on your machine, so the plugin brings a short script that makes them, together with the texture, card and models they use and the fire's two sounds.
+The plugin comes with everything it draws and plays already made, in its own Content folder. To see it in the Content Browser, tick **Show Plugin Content** in the Content Browser's settings. It holds:
+
+- **FireLooks**: the two materials that draw the eight fire looks, `M_FirePuff` and `M_SmokePuff`, with the noise texture `T_FireNoise` and the card `SM_FireCard` they draw on.
+- **FireSounds**: the fire's two loops, `S_FireBacking` and `S_FireHead`.
+- **FuelArt**: the plants, `SM_FuelGrass`, three bushes, three logs and a branch, three each of conifers, broadleaf trees and dead snags, and their two materials, `M_FuelGrass` and `M_FuelPlant`.
+- **Demo**: the demo level, `FireDemo`, and its four plain materials.
+
+Every Fire Field picks them up by itself.
+
+**The demo level.** Open **Demo > FireDemo**: a late-afternoon sky over dry grass, a Weather Director and a Fire Field with their try-it keys on, a road 40 metres ahead that a fire on a mild day won't cross, a stand of young conifers that torch, a patch of head-high brush and one of clearcut slash, and a ridge. The field draws the grass, the brush, the slash and the trees itself (section 5). Press Play, click in the game view and press **F**.
+
+**Making them again.** The Python scripts that made them are in the plugin's `Content/Python` folder, with the texture, card, models and recordings they are made from. You need them only to make again something you deleted or changed. The plugin's folder is `Plugins/WeatherDirector` in your project, or the plugin's folder under the engine's `Engine/Plugins/Marketplace` if you installed it from Fab.
 
 1. **Edit > Plugins**, search for **Python Editor Script Plugin**, tick it and restart the editor.
-2. **Tools > Execute Python Script**, and pick `Plugins/WeatherDirector/Extras/FireLooks/make_fire_looks.py`.
-3. Wait a few minutes. The Output Log ends with **FIRE_LOOKS done, no problems**. The Content Browser (with **Show Plugin Content** ticked in its settings) now has **Weather Director Content > FireLooks** with `T_FireNoise`, `SM_FireCard`, `M_FirePuff` and `M_SmokePuff`, **FireSounds** with `S_FireBacking` and `S_FireHead`, and **FuelArt** with the plants: `SM_FuelGrass`, three bushes, three logs and a branch, three each of conifers, broadleaf trees and dead snags, and their two materials, `M_FuelGrass` and `M_FuelPlant`.
+2. **Tools > Execute Python Script**, and pick `Content/Python/FireLooks/make_fire_looks.py` in the plugin's folder.
+3. Wait a few minutes. The Output Log ends with **FIRE_LOOKS done, no problems**.
 4. Restart the editor once, so every Fire Field picks them up.
 
-Until this has run, a Fire Field draws its fire as plain orange cones (and says so once in the Output Log), plays no sound and grows nothing. Running it again keeps the card, the meshes and the four materials and imports the texture and sounds again. If you update the plugin and a material it keeps was made by an older copy of the script, the Output Log says so in a **PROBLEM** line. To make everything afresh, close the editor, delete the plugin's `Content/FireLooks` and `Content/FuelArt` folders, open the editor and run it again.
+Running it keeps the card, the meshes and the four materials that are already there, and imports the texture and sounds again. If you update the plugin and a material it keeps was made by an older copy of the script, the Output Log says so in a **PROBLEM** line. To make everything afresh, close the editor, delete the plugin's `Content/FireLooks` and `Content/FuelArt` folders, open the editor and run it. Without them, a Fire Field draws its fire as plain orange cones (and says so once in the Output Log), plays no sound and grows nothing.
 
-**The demo level.** Run `Plugins/WeatherDirector/Extras/Demo/make_demo_map.py` the same way, after the looks. It makes **Demo > FireDemo**: a late-afternoon sky over dry grass, a Weather Director and a Fire Field with their try-it keys on, a road 40 metres ahead that a fire on a mild day won't cross, a stand of young conifers that torch, a patch of head-high brush and one of clearcut slash, and a ridge. The field draws the grass, the brush, the slash and the trees itself (section 5). Open it, press Play, click in the game view and press **F**.
+`Content/Python/Demo/make_demo_map.py`, run the same way, makes the demo level again.
 
-**The look test levels.** `Extras/Demo/make_look_test.py`, run the same way, makes **Demo > LookTest_Evening** and **LookTest_Day**: rows of small fields that light themselves, one panel for each of the eight looks, for steps of Flame Glow, Smoke Glow and Flame Stretch, for seven fuels, and under two kinds of trees, each with a sign. Fly along the rows to compare them. The director's number keys change the weather for all of them at once.
+**The look test levels.** `Content/Python/Demo/make_look_test.py`, run the same way, makes **Demo > LookTest_Evening** and **LookTest_Day**: rows of small fields that light themselves, one panel for each of the eight looks, for steps of Flame Glow, Smoke Glow and Flame Stretch, for seven fuels, and under two kinds of trees, each with a sign. Fly along the rows to compare them. The director's number keys change the weather for all of them at once.
 
-To run it without opening the editor: `UnrealEditor-Cmd.exe <YourProject>.uproject -ExecutePythonScript="<full path to make_fire_looks.py>" -unattended`. Don't add `-nullrhi`, because the materials need a renderer to compile.
+To run a script without opening the editor: `UnrealEditor-Cmd.exe <YourProject>.uproject -ExecutePythonScript="<full path to make_fire_looks.py>" -unattended`. Don't add `-nullrhi`, because the materials need a renderer to compile.
 
 ## 3. Your first fire, in five minutes
 
@@ -81,7 +92,7 @@ Every look draws flame, smoke, rising ash over fresh black ground, wisps from em
 
 Three dials beside it tune any look while the game runs. **Flame Glow** sets how brightly the flames glow, times the look's own glow: turn it down if the flames read white in a bright level. **Smoke Glow** does the same for the smoke, dust and ash, and **Flame Stretch** sets how far the flames stretch along their motion. **Light At Start**, under **Try It**, lights a fire in the middle of the field when the level starts.
 
-`Extras/Demo/make_look_test.py` builds a test level of panels: small fields side by side, each burning from the start, one for each look, for steps of the three dials, for different fuels, and under trees. See [section 2](#2-make-the-fires-looks-sounds-and-plants-once).
+`Content/Python/Demo/make_look_test.py` builds a test level of panels: small fields side by side, each burning from the start, one for each look, for steps of the three dials, for different fuels, and under trees. See [section 2](#2-the-looks-sounds-plants-and-demo-level).
 
 To use your own art, set **Look Card Mesh**, **Look Flame Material** and **Look Smoke Material**. The material reads its look from a scalar parameter called **Style**, plus **Stretch** and **Glow**, and each puff's numbers from 11 per-instance custom floats (seed, size, age, heat, velocity, centre, height above ground). `WeatherFireLooks.h` documents them.
 
@@ -208,14 +219,16 @@ Every setting has a tooltip that says what it does and in what unit.
 - **Roads and wet lines are not drawn.** The fire knows them; your level shows them. The field draws what grows on it (section 5) and darkens burned ground with plain tiles; the ground's own material is yours.
 - **Plants are drawn, not solid.** Nothing collides with the grass, bushes, logs or trees.
 - **Not replicated.** A multiplayer game should run the fire on the server and send what it needs.
-- **Windows and Unreal 5.9.** Built and tested with Unreal 5.9 and Visual Studio's MSVC compiler.
+- **Unreal 5.9, on Windows and Mac.** Built and tested with Unreal 5.9: with Visual Studio's MSVC compiler on Windows, and Apple's clang on a Mac.
 
 ## 13. Credits and licence
 
 The plugin, its code, its shaders and its documentation are copyright 2026 AIGameDev.olution, all rights reserved, and are licensed to you under the Fab end user licence that came with your purchase.
 
-The plants' models were made in code for the game Burn Director (Epic MegaJam 2026) by the plugin's author, and are drawn here with the plugin's own materials, without that game's cartoon outlines. `Extras/FuelArt/CREDITS.md` has the details.
+The plants' models were made in code for the game Burn Director (Epic MegaJam 2026) by the plugin's author, and are drawn here with the plugin's own materials, without that game's cartoon outlines. `Content/Python/FuelArt/CREDITS.md` has the details.
 
-The fire's two sounds are recordings of real fires: the Maple Fire of 14 August 2016, from the Yellowstone National Park sound library of the US National Park Service (public domain; credit: National Park Service), and "Big Branching Fire #1" by Joseph Sardin, BigSoundBank (CC0). `Extras/FireSounds/CREDITS.md` has the details.
+The fire's two sounds are recordings of real fires: the Maple Fire of 14 August 2016, from the Yellowstone National Park sound library of the US National Park Service (public domain; credit: National Park Service), and "Big Branching Fire #1" by Joseph Sardin, BigSoundBank (CC0). `Content/Python/FireSounds/CREDITS.md` has the details.
 
 The fire's spread follows Rothermel (1972) and Andrews (2018), with the forty fuel models of Scott and Burgan (2005), crown fire after Van Wagner (1977) and Rothermel (1991), and spotting after Albini (1979). Its numbers are checked against BehavePlus.
+
+Fire, BEHAVE! is not made by, affiliated with or endorsed by the USDA Forest Service or the makers of BehavePlus.
